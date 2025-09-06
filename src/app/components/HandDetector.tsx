@@ -10,6 +10,7 @@ const HandDetector = () => {
 
   const { handsDetected, indexFinger, isIndexStraight } = useHandDetection(videoRef, canvasRef);
   const { isThinking, thought, generateThought} = useThoughtGeneration(canvasRef, isIndexStraight)
+
   return (
     <>
       <video ref={videoRef} autoPlay playsInline className="hidden"/>
@@ -21,6 +22,8 @@ const HandDetector = () => {
         <p>Tip Y Coordinate: {indexFinger?.tip.y}</p>
         <p className="font-bold">Is Index Straight?</p>
         <p>{isIndexStraight ? "Yes" : "No"}</p>
+        <p>IsThinking?: {isThinking ? 'true' : 'false'}</p>
+        <p>Thought: {thought}</p>
       </div>
     </>
   );

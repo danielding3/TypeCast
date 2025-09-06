@@ -8,7 +8,7 @@ const useThoughtGeneration = (canvasRef: RefObject<HTMLCanvasElement | null>, is
 
   useEffect(() => {
     if (isFingerStraight) {
-      if ((lastGenerationTime.current - Date.now() > GENERATION_DEBOUNCE_TIME) && canvasRef) {
+      if ((Date.now() - lastGenerationTime.current  > GENERATION_DEBOUNCE_TIME) && canvasRef) {
         generateThought();
       }
     }
@@ -40,6 +40,7 @@ const useThoughtGeneration = (canvasRef: RefObject<HTMLCanvasElement | null>, is
       const data = await response.json();
 
       setThought(data.generatedText)
+      setIsThinking(false);
       console.log("### Data from thought generation hook: ", data.generatedText)
 
     } catch(error) {
