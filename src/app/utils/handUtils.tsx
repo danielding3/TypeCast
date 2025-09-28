@@ -27,7 +27,7 @@ export const drawLandmarks = (
   ]
 
   ctx.lineWidth = 3;
-  ctx.strokeStyle = "#1a73e8" // googles color i guess
+  ctx.strokeStyle = "#1a73e873" // googles color i guess
 
   // Draw lines between each landmark
   // Note that canvas width and height are multiplied with normalised landmarks.
@@ -49,6 +49,7 @@ export const drawLandmarks = (
 
 /**
  * Checks if hand is pointing (index finger is straight; others curled)
+ * At the moment only checks for one hand
 // @param {Array} landmarks - hand landmarks
 // @returns {Object} - contains information like isPointing, and the general canvas positioning in which the finger is pointing at.
  */
@@ -56,28 +57,70 @@ export const fingerPose = (
   landmarks: Landmark[][], 
 ) => {
 
-  const getLandmarkPoint = (index: number) => {
+  const getLandmarkPoint = (index: number, handIndex: number): Landmark => {
     // just getting from one hand for now.
-    return {x: landmarks[0][index].x, y: landmarks[0][index].y};
+    return {x: landmarks[handIndex][index].x, y: landmarks[handIndex][index].y};
+    // const coords: Landmark[] = [];
+    // iterate through landmarks
+    // returns the x and y coord of each hand that it sees
+    // landmarks.forEach((landmark) => {
+    //   coords.push({ 
+    //     x: landmark[index].x, 
+    //     y: landmark[index].y 
+    //   });
+    // });
+    // return coords;
   }
-  
+  /**
+   * Area between four points 
+   * @param p1 
+   * @param p2 
+   * @param p3 
+   * @param p4 
+   */
+  const shoelaceArea = (p1:Landmark, p2:Landmark, p3:Landmark, p4:Landmark): number => {
+    const a1 = p1.x*p2.y + p2.x*p3.y + p3.x*p4.y + p4.x*p1.y;
+    const a2 = p2.x*p1.y + p3.x*p2.y + p4.x*p3.y + p1.x*p4.y;
+
+    const aTotal = Math.abs(a1 - a2) / 2;
+
+    return aTotal;
+  }
 
 
   if (landmarks && landmarks.length > 0) {
-    const index_1 = getLandmarkPoint(5);
-    const index_2 = getLandmarkPoint(6);
-    const index_3 = getLandmarkPoint(7);
-    const index_4 = getLandmarkPoint(8);
-    
-    const middle_1 = getLandmarkPoint(9);
-    const middle_2 = getLandmarkPoint(10);
-    const middle_3 = getLandmarkPoint(11);
-    const middle_4 = getLandmarkPoint(12);
+    // iterate through each hand and return the largest.
+    let currLargestHandArea = 0;
+    let currLargestHandIndex = 0;
+    landmarks.forEach((hand, index) => {
+      const getHandPoint = (idx:number) => {return { x: hand[idx].x, y:  hand[idx].y }}
 
-    const ring_1 = getLandmarkPoint(13);
-    const ring_2 = getLandmarkPoint(14);
-    const ring_3 = getLandmarkPoint(15);
-    const ring_4 = getLandmarkPoint(16);
+      const indexTip = getHandPoint(5);
+      const thumbTip = getHandPoint(4);
+      const pinkyTip = getHandPoint(20);
+      const wrist = getHandPoint(5);
+
+      const area = shoelaceArea(indexTip, thumbTip, pinkyTip, wrist);
+      if (area > currLargestHandArea) {
+        currLargestHandArea = area;
+        currLargestHandIndex = index;
+      }
+    })
+
+    const index_1 = getLandmarkPoint(5, currLargestHandIndex);
+    const index_2 = getLandmarkPoint(6, currLargestHandIndex);
+    const index_3 = getLandmarkPoint(7, currLargestHandIndex);
+    const index_4 = getLandmarkPoint(8, currLargestHandIndex);
+    
+    const middle_1 = getLandmarkPoint(9, currLargestHandIndex);
+    const middle_2 = getLandmarkPoint(10, currLargestHandIndex);
+    const middle_3 = getLandmarkPoint(11, currLargestHandIndex);
+    const middle_4 = getLandmarkPoint(12, currLargestHandIndex);
+
+    const ring_1 = getLandmarkPoint(13, currLargestHandIndex);
+    const ring_2 = getLandmarkPoint(14, currLargestHandIndex);
+    const ring_3 = getLandmarkPoint(15, currLargestHandIndex);
+    const ring_4 = getLandmarkPoint(16, currLargestHandIndex);
 
     const isIndexStraight = isFingerStraight(index_1, index_2, index_3, index_4)
     const isMiddleCurled = isFingerCurled(middle_1, middle_2, middle_3, middle_4)
@@ -92,16 +135,9 @@ export const fingerPose = (
       },
       isIndexStraight,
       isMiddleCurled,
-      isRingCurled
+      isRingCurled,
+      fingerTipAngle,
     }
-
-    // get landmark points from coordinates
-    // if (landmarks) {
-    //   landmarks.forEach(landmark => {
-    //     console.log("index finger points: " + index_1,index_2,index_3, index_4)
-        
-    //   })
-    // }
   }
   // no landmarks
   return null;
@@ -125,16 +161,7 @@ const isFingerStraight = (
   joint3: Landmark, 
   joint4: Landmark
 ) => {
-  const v1 = pointToVector(joint1, joint2); // base to second
-  const v2 = pointToVector(joint2, joint3); // second to third
-  const v3 = pointToVector(joint3, joint4); // third to tip
-
-  const angle1 = angleBetweenVectors(v1, v2);
-  const angle2 = angleBetweenVectors(v2, v3);
-
-  // Find average of two angles
-  // A straight finger will have an avg angle closer to 0
-  const averageAngle = (angle1 + angle2) / 2
+  const averageAngle = averageFingerAngle(joint1, joint2, joint3, joint4)
 
   const ANGLE_THRESHOLD = 0.05 // Higher = bigger cut-off
 
@@ -146,6 +173,59 @@ const isFingerStraight = (
   }
   return false;
 }
+/**
+ * Finds average angle of all the joints relative to each other.
+ * e.g a straight finger will have an angle of 0. 
+ * @param joint1 
+ * @param joint2 
+ * @param joint3 
+ * @param joint4 
+ * @returns average finger joint angle in radians
+ */
+const averageFingerAngle = (
+  joint1: Landmark, 
+  joint2: Landmark, 
+  joint3: Landmark, 
+  joint4: Landmark
+) => {
+  const v1 = pointToVector(joint1, joint2); // base to second
+  const v2 = pointToVector(joint2, joint3); // second to third
+  const v3 = pointToVector(joint3, joint4); // third to tip
+
+  const angle1 = angleBetweenVectors(v1, v2);
+  const angle2 = angleBetweenVectors(v2, v3);
+
+  // Find average of two angles
+  // A straight finger will have an avg angle closer to 0
+  const averageAngle = (angle1 + angle2) / 2
+
+  return averageAngle
+}
+// normalized finger tip angle, returns in deg
+const fingerTipAngle = (
+  joint1: Landmark, 
+  joint2: Landmark
+) => {
+  const v = pointToVector(joint1, joint2); // base to second
+  const v_length = Math.sqrt(v.x**2 + v.y**2)
+  const v_normalized = {x: v.x/v_length, y: v.y/v_length}
+
+  const origin = {x: 1, y: 0} // positive x axis vector
+
+  
+  // const angle = angleBetweenVectors(v_normalized, origin);
+  const angle1 = Math.atan2(v_normalized.y, v_normalized.x);
+  const angle2 = Math.atan2(origin.x, origin.y);
+  let angle = (angle1 - angle2) * (180 / Math.PI);
+  
+  // console.log(
+  //   'input vector: ', v_normalized,
+  //   "base vector: ", origin,
+  //   "calculated angle: ", angle * 180/Math.PI
+  // )
+  return (angle + 360) % 360 + 90;
+}
+
 /**
  * Determines if finger is curled based on proximity of tip to base
  * 

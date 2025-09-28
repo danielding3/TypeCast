@@ -2,44 +2,115 @@
 
 import useHandDetection from "@/app/hooks/useHandDetection"
 import useThoughtGeneration from "@/app/hooks/useThoughtGeneration"
-import { useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { AnimationStyles, useParticles } from "../utils/UIUtils"
+import useDeviceAndCanvas from "@/app/hooks/useDeviceAndCanvas"
+import useCamera from "@/app/hooks/useCamera"
+import MainComponent from "./MainComponent"
+// import DebugPanel from "./DebugPanel"
 
+
+// Container component
 const HandDetector = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [ debug, setDebug ] = useState<boolean>(false)
 
-  const { handsDetected, indexFinger, isIndexStraight } = useHandDetection(videoRef, canvasRef);
-  const { isThinking, thought, generateThought} = useThoughtGeneration(canvasRef, isIndexStraight)
+  const {
+    stream,
+    facingMode,
+    setFacingMode,
+    setupCamera,
+    stopCamera
+  } = useCamera();
 
-  const debugClickHandler = () => {
-    if (!debug) {
-      setDebug(true);
-    } else {
-      setDebug(false);
+  const { 
+    handsDetected, 
+    indexFinger, 
+    isIndexStraight,
+    fingerTipAngle,
+    isInitialized,
+    hasDetectedOnce,
+    startDetection,
+    stopDetectHands,
+  } = useHandDetection(videoRef, canvasRef, stream);
+
+  const { 
+    isThinking, 
+    thought, 
+    // generateThought,
+    resetPrompt,
+    customPrompt,
+    setCustomPrompt,
+  } = useThoughtGeneration(canvasRef, isIndexStraight);
+
+  const { 
+    isMobile, 
+    updateCanvasSize,
+    canvasWidth,
+    canvasHeight,
+  } = useDeviceAndCanvas(videoRef, canvasRef);
+
+  const {
+    particles, 
+    handleCreateDirectionalSparkleBurst
+  } = useParticles(canvasRef)
+
+  useEffect(() => {
+    console.log('Setting up camera')
+    setupCamera()
+  },[])
+
+  // Update size of canvas so it's suitable for video
+  useEffect(() => {
+    if (stream && videoRef.current) {
+      const video = videoRef.current;
+
+      const handleLoadedData = () => {
+        console.log("Video dimensions:", video.videoWidth, video.videoHeight);
+        const aspectRatio = video.videoWidth / video.videoHeight;
+        updateCanvasSize(aspectRatio);
+        startDetection();
+      };
+      // Attaching stream to video element
+      console.log('attaching stream')
+      videoRef.current.srcObject = stream;
+
+      video.addEventListener('loadeddata', handleLoadedData);
+      return () => {
+        video.removeEventListener('loadeddata', handleLoadedData);
+        stopDetectHands();
+      };
     }
-  }
+  }, [isInitialized, stream])
+
+
+
   return (
     <>
-      <button className="text-sm p-4" onClick={() => debugClickHandler()}>debug</button>
-      <video ref={videoRef} autoPlay playsInline className="hidden"/>
-      <canvas ref={canvasRef} className="w-full max-w-4xl rounded-lg"/>
-      {/* Debug Panel */}
-      <div className="bg-white-50 text-green-500 max-w-4xl h-auto p-4 m-4">
-        {debug && 
-          <div>
-            <p className="font-bold">Index Finger Properties: </p>
-            <p>Tip X Coordinate: {indexFinger?.tip.x}</p>
-            <p>Tip Y Coordinate: {indexFinger?.tip.y}</p>
-            <p className="font-bold">Is Index Straight?</p>
-            <p>{isIndexStraight ? "Yes" : "No"}</p>
-          </div>
-        }
-        <div className="font-bold">
-          <p>{isThinking ? 'Thinking...' : ''}</p>
-          <p>{thought}</p>
-        </div>
-      </div>
+      <AnimationStyles />
+      <MainComponent 
+        canvasRef={canvasRef}
+        canvasWidth={canvasWidth}
+        canvasHeight={canvasHeight}
+        videoRef={videoRef}
+        isMobile={isMobile}
+        facingMode={facingMode}
+        setFacingMode={setFacingMode}
+        setupCamera={setupCamera}
+        stopCamera={stopCamera}
+        handsDetected={handsDetected}
+        isThinking={isThinking}
+        isIndexStraight={isIndexStraight}
+        indexFinger={indexFinger}
+        hasDetectedOnce={hasDetectedOnce}
+        thought={thought}
+        fingerTipAngle={fingerTipAngle}
+        handleCreateDirectionalSparkleBurst={handleCreateDirectionalSparkleBurst}
+        particles={particles}
+        customPrompt={customPrompt}
+        setCustomPrompt={setCustomPrompt}
+        resetPrompt={resetPrompt}
+      />
     </>
   );
 }

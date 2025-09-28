@@ -1,7 +1,7 @@
 "use client";
 
 import { HandLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
-import { useEffect, useRef, RefObject, useState } from "react";
+import { useEffect, useRef, RefObject, useState, useCallback } from "react";
 import { drawLandmarks, fingerPose } from "../utils/handUtils";
 
 interface Point2D {
@@ -9,7 +9,7 @@ interface Point2D {
   y: number
 }
 
-interface Finger {
+export interface Finger {
   base: Point2D,
   joint1: Point2D,
   joint2: Point2D,
@@ -18,23 +18,29 @@ interface Finger {
 
 const useHandDetection = (
   videoRef: RefObject<HTMLVideoElement | null>, 
-  canvasRef: RefObject<HTMLCanvasElement | null>
+  canvasRef: RefObject<HTMLCanvasElement | null>,
+  stream: MediaStream | null
 ) => {
   // const videoRef = useRef<HTMLVideoElement>(null);
   // const canvasRef = useRef<HTMLCanvasElement>(null);
   const handLandmarkerRef = useRef<HandLandmarker | null>(null);
-
+  const cooldownRef = useRef(Date.now())
+  const animationRef = useRef<number | null>(null);
   const [ error, setError ] = useState<string | null>(null);
   const [ handLandmarker, setHandLandmarker ] = useState<HandLandmarker | null>(null);
   const [ handsDetected, setHandsDetected ] = useState<number>(0);
   const [ indexFinger, setIndexFinger ] = useState<Finger | null>(null);
+  const [ fingerTipAngle, setFingerTipAngle ] = useState<number>(90);
   const [ isIndexStraight, setIsIndexStraight ] = useState<boolean>(false)
+  const [ isInitialized, setIsInitialized ] = useState<boolean>(false)
+  const [ hasDetectedOnce, setHasDetectedOnce ] = useState<boolean>(false);
 
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        await initializeMediaPipe();
-        await setupCamera();
+        await initializeMediaPipe(); // sets up hand landmarker
+        // await setupCamera();
+        setIsInitialized(true);
       } catch (error) {
         console.error("App initialization failed:", error);
       }
@@ -69,30 +75,15 @@ const useHandDetection = (
     }
   }
 
-  // Setting up camera stream
-  const setupCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment"}
-      })
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.onloadedmetadata = () => {
-          startDetection();
-        }
-      } 
-    } catch (err) {
-      setError("Camera access failed: " + (err instanceof Error ? err.message : String(err)))
-    }
-  }
-
   // Setting up canvas
   const startDetection = () => {
+    console.log('starting detection')
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (video && canvas) {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+
       // Initiate detection loop
       detectHands();
     }
@@ -102,23 +93,28 @@ const useHandDetection = (
     // Detection Loop
     if (!handLandmarkerRef.current || !videoRef.current || !canvasRef.current) {
       // try again
-      requestAnimationFrame(detectHands);
+      animationRef.current = requestAnimationFrame(detectHands);
       return;
     }
     const video = videoRef.current;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
-    // Draw video frame
+    if (video.readyState < 2 ) {
+      animationRef.current = requestAnimationFrame(detectHands);
+      return;
+    }
+    // Draw video frame to canvas
     ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
-
+    
     // Detect hands
     const results = handLandmarkerRef.current.detectForVideo(video, performance.now()) // could use performance.now() for more precision
     // Update count (used for drawing)
     setHandsDetected( results.landmarks ? results.landmarks.length : 0 )
 
     // Draw landmarks
-    if (results.landmarks && ctx) {
+    if (results.landmarks.length > 0 && ctx) {
+      
       // Drawing connectors
       ctx.fillStyle = 'blue'
       results.landmarks.forEach(landmark => {
@@ -129,14 +125,21 @@ const useHandDetection = (
       const fingerData = fingerPose(results.landmarks)
       if (fingerData?.indexFinger) {
         const { base, joint1, joint2, tip } = fingerData.indexFinger
+
+        // Updates finger state, triggers thoughts if index finger is straight
         setIndexFinger(fingerData.indexFinger)
+
         setIsIndexStraight(fingerData.isIndexStraight)
-        // console.log("index finger points: " + base,joint1,joint2, tip)
+        
+        
         // Drawing index finger
-
-
         if (fingerData.isIndexStraight) {
+          const fingerAngle = fingerData.fingerTipAngle(base, tip);
           ctx.fillStyle = "#FF5500"
+
+          
+          setFingerTipAngle(fingerAngle)
+          setHasDetectedOnce(true); // finger has been pointed at least once; triggers removal of tutorial message
         } else {
           ctx.fillStyle = "#FFCC00"
         }
@@ -148,16 +151,29 @@ const useHandDetection = (
           ctx.closePath();
         })
       }
-
-
     }
+    // setIndexFinger(null)
 
-    requestAnimationFrame(detectHands);
+    animationRef.current = requestAnimationFrame(detectHands);
   }
+
+  // cleanup function
+  const stopDetectHands = useCallback(() => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current)
+      animationRef.current = null
+    }
+  }, [])
+
   return {
     handsDetected,
     indexFinger,
-    isIndexStraight
+    fingerTipAngle,
+    isIndexStraight,
+    isInitialized,
+    startDetection,
+    stopDetectHands,
+    hasDetectedOnce,
   }
 
 }

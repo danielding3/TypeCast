@@ -3,19 +3,6 @@ import { google } from '@ai-sdk/google';
 import { generateText, streamText } from "ai"
 
 
-const DEFAULT_PROMPT = "Stereotype the main person in the scene in a witty, judgmental way. Use aspects of their appearance like their clothing, their physique, their hairstyle, their shoes, etc and craft a unique gen-z appeasing roast.\
-Rules:\
-Create a stereotypical judgement in 20 words or less.\
-Ignore all details about hands, tracking, and fingers.\
-The judgment must be intellectual, witty, and rude.\
-The judgement should be written in a SMS texting style, so use less punctuation and capitalization.\
-Avoid too much useage of un-funny TikTok or Soundcloud references.\
-Hyperfixate on one specific trait and mention it directly in the roast.\
-Examples:\
-He probably thinks he fits in at inner-west parties with that mullet.\
-"
-
-
 // Note: Gemini API key is automatically read from .env.local
 
 /**
@@ -26,8 +13,8 @@ He probably thinks he fits in at inner-west parties with that mullet.\
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    console.log('api body: ', body)
     const image = body.image
+    const prompt = body.prompt
     if (!image) {
       return Response.json({ error: 'No image provided'}, { status: 400 })
     }
@@ -41,7 +28,7 @@ export async function POST(request: NextRequest) {
 
           {
             type: 'text' as const,
-            text: DEFAULT_PROMPT
+            text: prompt
           },
           { 
             type: 'image' as const,

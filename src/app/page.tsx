@@ -2,12 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import CameraTest from "@/app/components/CameraWithCanvas"
 import HandDetector from "./components/HandDetector";
+import MainComponent from "./components/MainComponent";
 
 const Header = () => {
   return (
     <div className="sticky top-0 left-0 right-0 w-full bg-white p-4 z-50 shadow-sm">
       <div className="w-full flex justify-between items-center text-base max-w-7xl mx-auto text-gray-500">
-        <span className="text-black text-2xl font-bold tracking-tight">stereotyper</span>
+        <span className="text-black text-2xl font-bold tracking-tight">type-caster</span>
         <span className="md:text-base text-xs">
           Built with&nbsp;
           <Link 
@@ -35,6 +36,7 @@ export default function Home() {
       <Header />
       <main className="flex flex-col items-center p-4 bg-white pt-4 md:pt-20 overflow-y-auto">
         {/* <CameraTest/> */}
+        {/* <MainComponent /> */}
         <HandDetector/>
       </main>
     </div>
