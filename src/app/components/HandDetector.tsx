@@ -18,7 +18,8 @@ const HandDetector = () => {
   const {
     stream,
     facingMode,
-    setFacingMode,
+    // setFacingMode,
+    handleToggleFacingMode,
     setupCamera,
     stopCamera
   } = useCamera();
@@ -55,10 +56,10 @@ const HandDetector = () => {
     handleCreateDirectionalSparkleBurst
   } = useParticles(canvasRef)
 
-  useEffect(() => {
-    console.log('Setting up camera')
-    setupCamera()
-  },[])
+  // useEffect(() => {
+  //   console.log('Setting up camera')
+  //   setupCamera()
+  // },[facingMode])
 
   // Update size of canvas so it's suitable for video
   useEffect(() => {
@@ -95,7 +96,8 @@ const HandDetector = () => {
         videoRef={videoRef}
         isMobile={isMobile}
         facingMode={facingMode}
-        setFacingMode={setFacingMode}
+        // setFacingMode={setFacingMode}
+        handleToggleFacingMode={handleToggleFacingMode}
         setupCamera={setupCamera}
         stopCamera={stopCamera}
         handsDetected={handsDetected}

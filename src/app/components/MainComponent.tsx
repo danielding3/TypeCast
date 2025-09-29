@@ -16,7 +16,7 @@ interface MainComponentProps {
   canvasHeight: number,
   isMobile: boolean,
   facingMode: FacingMode,
-  setFacingMode: (mode: FacingMode) => void,
+  handleToggleFacingMode: () => void;
   setupCamera: () => void,
   stopCamera: () => void,
   handsDetected: number,
@@ -41,7 +41,7 @@ canvasHeight,
 videoRef,
 isMobile,
 facingMode,
-setFacingMode,
+handleToggleFacingMode,
 setupCamera,
 stopCamera,
 handsDetected,
@@ -74,7 +74,7 @@ resetPrompt
           <CameraSwitchButton 
             isMobile={isMobile}
             facingMode={facingMode}
-            setFacingMode={setFacingMode}
+            handleToggleFacingMode={handleToggleFacingMode}
             setupCamera={setupCamera}
             stopCamera={stopCamera}
           />

@@ -10,8 +10,8 @@ const AuthenticSansPro = localFont({
 })
 
 export const metadata: Metadata = {
-  title: "Stereotyper",
-  description: "Generate (stereotypical) thoughts based on hand gestures using MediaPipe and Gemini",
+  title: "TYPECAST",
+  description: "Generate (stereotypical) thoughts of your friends using hand gestures. Built using MediaPipe and Gemini",
 };
 
 export default function RootLayout({

@@ -1,21 +1,20 @@
 
 interface CameraSwitchButtonProps {
   facingMode: 'environment' | 'user'
-  setFacingMode: (mode: 'environment' | 'user') => void,
+  handleToggleFacingMode: () => void
   setupCamera: () => void, 
   stopCamera: () => void,
   isMobile: boolean,
 }
 
 
-const CameraSwitchButton = ({facingMode, setFacingMode, setupCamera, stopCamera, isMobile}: CameraSwitchButtonProps) => {
+const CameraSwitchButton = ({facingMode, handleToggleFacingMode, setupCamera, stopCamera, isMobile}: CameraSwitchButtonProps) => {
 
   const handleButtonClick = () => { 
-    stopCamera();
+    // stopCamera();
     const toggle = { environment: 'user', user: 'environment'} as const // using object lookup to toggle
     console.log('toggling to: ',toggle[facingMode])
-    setFacingMode(toggle[facingMode])
-    setupCamera();
+    handleToggleFacingMode();
   }
 
   const visibilityStyle = isMobile ? {display: 'block'} : {display: 'none'}
