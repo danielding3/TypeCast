@@ -5,8 +5,8 @@ const DEFAULT_PROMPT = "Stereotype the main person being pointed at in the scene
   Create a stereotypical judgement in 20 words or less.\
   Ignore all details about hands, tracking, pointing, and fingers.\
   The stereotype must be intellectual, witty, and rude.\
-  The stereotype should be written in a SMS texting style, so use less punctuation and capitalization and keep the tone casual.\
-  Avoid too much useage of un-funny Gen-Z, TikTok or Soundcloud references.\
+  The stereotype should be written in a SMS texting style, so use less formal punctuation and capitalization and keep the tone casual. Use ironic punctuation.\
+  Avoid useage of un-funny Gen-Z, TikTok or Soundcloud references.\
   Prefer to talk about things OTHER than hairstyle, unless its directly noteable, e.g dyed or interesting hairstyle\
   If needed, fixate on one specific trait\
   Follow these examples for inspiration:\

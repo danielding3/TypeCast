@@ -6,6 +6,7 @@ import CameraSwitchButton from "./CameraSwitchButton"
 import ThoughtBubble from "./ThoughtBubble"
 import ParticleEffect from "./ParticleEffect"
 import DebugPanel from "./DebugPanel"
+import ImageStickers from "./ImageStickers"
 
 
 interface MainComponentProps {
@@ -60,10 +61,11 @@ resetPrompt
   return (
     <>
       <video ref={videoRef} autoPlay playsInline className="hidden"/>
-      <div className="relative canvas-container w-full max-w-4xl shadow-lg rounded-xl">
+      <div className="relative canvas-container w-full max-w-4xl shadow-lg rounded-2xl">
+        <ImageStickers />
         <canvas 
           ref={canvasRef} 
-          className="w-full rounded-lg" 
+          className="w-full border border-black  rounded-2xl" 
           width={canvasWidth}
           height={canvasHeight}
           style={{width: `${canvasWidth}px`}}

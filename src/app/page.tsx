@@ -1,15 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import CameraTest from "@/app/components/CameraWithCanvas"
 import HandDetector from "./components/HandDetector";
-import MainComponent from "./components/MainComponent";
 
 const Header = () => {
   return (
-    <div className="sticky top-0 left-0 right-0 w-full bg-white p-4 z-50 shadow-sm">
-      <div className="w-full flex justify-between items-center text-base max-w-7xl mx-auto text-gray-500">
-        <span className="text-black text-2xl font-bold tracking-tight">type-caster</span>
-        <span className="md:text-base text-xs">
+    <header className="sticky bg-(--color-background) top-0 left-0 right-0 w-full not-even:p-4 mt-0 md:mt-8 z-50">
+      <div className="w-full flex flex-col justify-between items-center text-base max-w-7xl mx-auto text-white text-center">
+        <h1 className="text-stroke-heavy text-[10vw] md:text-6xl font-bold">TYPE-CaST</h1>
+        <h2 className="text-stroke-heavy text-[5vw] md:text-3xl font-bold">who does AI think you are?</h2>
+        <h3 className="md:text-base text-xs">
           Built with&nbsp;
           <Link 
             className="underline hover:text-gray-700"
@@ -23,18 +22,17 @@ const Header = () => {
             target="_blank">
               MediaPipe
           </Link>
-        </span>
+        </h3>
       </div>
-    </div>
+    </header>
   )
 }
-
 
 export default function Home() {
   return (
     <div>
       <Header />
-      <main className="flex flex-col items-center p-4 bg-white pt-4 md:pt-20 overflow-y-auto">
+      <main className="flex flex-col items-center p-4 pt-4 overflow-y-auto overflow-x-hidden">
         {/* <CameraTest/> */}
         {/* <MainComponent /> */}
         <HandDetector/>

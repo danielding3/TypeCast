@@ -1,18 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import localFont from 'next/font/local'
 import { Analytics } from "@vercel/analytics/next"
+import "./globals.css";
 
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const AuthenticSansPro = localFont({
+  src: '../../public/fonts/AUTHENTICSansPro-Condensed90.woff2',
+  variable: '--authentic-sans'
+})
 
 export const metadata: Metadata = {
   title: "Stereotyper",
@@ -27,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${AuthenticSansPro.className} antialiased`}
       >
         {children}
         <Analytics />

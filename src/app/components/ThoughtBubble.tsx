@@ -41,22 +41,22 @@ const ThoughtBubble = (
   const bubbleContent = () => {
     // If they haven't made a thought yet, prompt them to point at someone
     if (!hasDetectedOnce) {
-      return <p className="text-gray-500 italic">Point at someone you want to stereotype...</p>
+      return <p className="text-black">point at someone you want to stereotype...</p>
     }
 
     // If it's thinking, then make a thinking animation
     if (isThinking) {
       return <div className='relative py-4'>
-          <p className="text-gray-500 italic spin -translate-x-1/2 -translate-y-1/2 text-2xl md:text-4xl">💭</p>
+          <p className="text-gray-500 italic spin -translate-x-1/2 -translate-y-1/2 text-2xl md:text-4xl">🤔</p>
         </div>
     } 
 
     // If finished thinking, then have the thought. 
     if ( thought && isIndexStraight)  {
-      return <p className="text-gray-800 italic">{thought}</p>
+      return <p className="text-base">{thought}</p>
     }
     // Otherwise say that you're waiting to stereotype...
-    return <p className="text-gray-500 text-sm italic">Waiting for hand gesture...</p>
+    return <p className="text-base">waiting for hand gesture...</p>
   }
 
   const getBubbleStyles = (): CSSProperties => {
@@ -96,13 +96,14 @@ const ThoughtBubble = (
         transform: 'translateY(-50%)',
         top: indexFinger?.tip.y * canvasRef.current?.height,
         left: indexFinger?.tip.x * canvasRef.current?.width,
+        lineHeight: '130%',
         maxWidth: '250px'
       }
     }
     return {};
   }
   const getBubblePadding = () : string => {
-    return (isMobile ? '9px 18px' : '14px 24px');
+    return (isMobile ? '9px 16px' : '10px 20px');
   }
 
   const getBubbleTextSize = () => {
@@ -115,13 +116,14 @@ const ThoughtBubble = (
       className={`${isThinking ? 'bubble-travel' : ''}`}
       style={{
         ...getBubbleStyles(),
-        backgroundColor: 'rgba(255,255,255,0.6)',
+        backgroundColor: 'rgba(255,255,255, 1)',
+        border: '1px solid black',
         backdropFilter: 'blur(4px)',
         boxShadow: '0 4px 30px rgba(0, 0, 0, 0.2)',
         zIndex: 50,
         padding: getBubblePadding(),
         fontSize: getBubbleTextSize(),
-        borderRadius: isThinking ? '40px' : '24px',        
+        borderRadius: isThinking ? '40px' : '1rem',        
       }}
     >
 
