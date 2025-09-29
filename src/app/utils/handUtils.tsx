@@ -216,7 +216,7 @@ const fingerTipAngle = (
   // const angle = angleBetweenVectors(v_normalized, origin);
   const angle1 = Math.atan2(v_normalized.y, v_normalized.x);
   const angle2 = Math.atan2(origin.x, origin.y);
-  let angle = (angle1 - angle2) * (180 / Math.PI);
+  const angle = (angle1 - angle2) * (180 / Math.PI);
   
   // console.log(
   //   'input vector: ', v_normalized,

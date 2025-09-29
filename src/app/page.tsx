@@ -7,7 +7,7 @@ const Header = () => {
     <header className="sticky bg-(--color-background) top-0 left-0 right-0 w-full not-even:p-4 mt-0 md:mt-8 z-50">
       <div className="w-full flex flex-col justify-between items-center text-base max-w-7xl mx-auto text-white text-center">
         <h1 className="text-stroke-heavy text-[10vw] md:text-6xl font-bold">TYPE-CaST</h1>
-        <h2 className="text-stroke-heavy text-[5vw] md:text-3xl font-bold">who does AI think you are?</h2>
+        <h2 className="text-stroke-medium md:text-stroke-heavy text-[5vw] md:text-3xl font-bold">who does AI think you are?</h2>
         <h3 className="md:text-base text-xs">
           Built with&nbsp;
           <Link 
