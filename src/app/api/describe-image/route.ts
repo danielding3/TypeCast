@@ -37,18 +37,39 @@ export async function POST(request: NextRequest) {
         ]
       }
     ]
+    const safetySettings = [
+      {
+        category: "HARM_CATEGORY_HARASSMENT",
+        threshold: "BLOCK_NONE",
+      },
+      {
+        category: "HARM_CATEGORY_HATE_SPEECH",
+        threshold: "BLOCK_NONE",
+      },
+    ];
+
+    const systemRules = `CRITICAL RULES:
+- NEVER mention hands, mediapipe, tracking, pointing, gestures, or camera interactions
+- WHAT TO DO: Focus on visible details like clothing, facial features, hairstyle, body type, general vibes, or setting`
 
     const { text } = await generateText({
       model: google("models/gemini-2.5-flash-lite"),
       messages: messages,
-      })
+      system: systemRules,
+      temperature: 1.5,
+      providerOptions: {
+        google: {
+          safetySettings: safetySettings
+        }
+      }
+    })
 
     // for await (const textPart of textStream) {
     //   fullText += textPart
     // }
     
     return Response.json({ 
-      message: "Testing Google API Response",
+      message: "Google API Response",
       generatedText: text,
     })
   } catch (error) {
