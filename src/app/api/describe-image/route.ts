@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       model: google("models/gemini-2.5-flash-lite"),
       messages: messages,
       system: systemRules,
-      temperature: 1.5,
+      temperature: 1.0,
       providerOptions: {
         google: {
           safetySettings: safetySettings

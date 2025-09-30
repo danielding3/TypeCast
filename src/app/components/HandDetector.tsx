@@ -39,9 +39,8 @@ const HandDetector = () => {
     isThinking, 
     thought, 
     // generateThought,
-    resetPrompt,
+    changePrompt,
     customPrompt,
-    setCustomPrompt,
   } = useThoughtGeneration(canvasRef, isIndexStraight);
 
   const { 
@@ -110,8 +109,7 @@ const HandDetector = () => {
         handleCreateDirectionalSparkleBurst={handleCreateDirectionalSparkleBurst}
         particles={particles}
         customPrompt={customPrompt}
-        setCustomPrompt={setCustomPrompt}
-        resetPrompt={resetPrompt}
+        changePrompt={changePrompt}
       />
     </>
   );

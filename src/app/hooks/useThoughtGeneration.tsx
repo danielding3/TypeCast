@@ -1,18 +1,19 @@
 import { useEffect, useRef, RefObject, useState } from "react"
+import { DEFAULT_PROMPT, NICE_PROMPT } from "../utils/prompts";
 
-const DEFAULT_PROMPT = `Stereotype the main person being pointed at in the scene in a witty, judgmental way. Use aspects of their appearance like their outfit, their physique, their hairstyle, their shoes, etc and craft a unique gen-z appeasing stereotype.\
-  Rules:\n
-  Create a stereotypical judgement in 20 words or less.\n
-  The stereotype must be intellectual, witty, and rude.\n
-  The stereotype should be written in a SMS texting style, so use less formal punctuation and capitalization and keep the tone casual. Use ironic punctuation.\
-  Avoid over-usage of un-funny Gen-Z, TikTok or Soundcloud references.\n
-  Prefer to talk about things OTHER than hairstyle, unless its directly noteable, e.g dyed or interesting hairstyle\
-  If needed, fixate on one specific trait\n
-  Follow these examples for inspiration:\n
-  'He looks like he goes bouldering and makes it his identity.'\n
-  'He probably thinks he fits in at inner-west parties with that mullet.'\n
-  'She thinks her necklace makes her so mysterious and edgy.'\n
-  `
+// const DEFAULT_PROMPT = `Stereotype the main person being pointed at in the scene in a witty, judgmental way. Use aspects of their appearance like their outfit, their physique, their hairstyle, their shoes, etc and craft a witty stereotype.\n
+// Rules:
+// Create a stereotypical judgement in 20 words or less.
+// The stereotype must be intellectual, witty, and rude.
+// The stereotype should be written in a SMS texting style, so use less punctuation and capitalization and keep the tone casual. Use ironic punctuation.
+// Avoid over-usage of un-funny Gen-Z, TikTok or Soundcloud references.
+// Prefer to talk about things OTHER than hairstyle, unless its directly noteable, e.g dyed or interesting hairstyle
+// If needed, fixate on one specific trait
+// Follow these examples for inspiration:
+// 'He looks like he goes bouldering and makes it his identity.'
+// 'He probably thinks he fits in at inner-west parties with that mullet.'
+// 'She thinks her necklace makes her so mysterious and edgy.'
+// `
 
 const useThoughtGeneration = (
   canvasRef: RefObject<HTMLCanvasElement | null>, 
@@ -66,16 +67,16 @@ const useThoughtGeneration = (
     }
   }
 
-  const resetPrompt = () => {
-    setCustomPrompt(DEFAULT_PROMPT)
+  const changePrompt = (prompt:string) => {
+    setCustomPrompt(prompt)
   }
+
 
   return {
     isThinking,
     thought,
-    resetPrompt,
+    changePrompt,
     customPrompt,
-    setCustomPrompt,
     generateThought
   }
 }

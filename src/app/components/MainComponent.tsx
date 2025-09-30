@@ -29,8 +29,7 @@ interface MainComponentProps {
   handleCreateDirectionalSparkleBurst: (x: number, y: number, angle: number) => void,
   particles: ReactNode[]
   customPrompt: string,
-  setCustomPrompt: (prop: string) => void
-  resetPrompt: () => void
+  changePrompt: (prompt:string) => void
 }
 
 // Presentation component
@@ -54,8 +53,7 @@ fingerTipAngle,
 handleCreateDirectionalSparkleBurst,
 particles,
 customPrompt,
-setCustomPrompt,
-resetPrompt
+changePrompt,
 } : MainComponentProps) => {
 
   return (
@@ -96,8 +94,7 @@ resetPrompt
       <div className="m-4" style={{width: canvasWidth}}>
         <PromptEditor 
           customPrompt={customPrompt} 
-          setCustomPrompt={setCustomPrompt}
-          resetPrompt={resetPrompt}
+          changePrompt={changePrompt}
         />
       </div>
       {/* <button className="text-sm p-4 text-gray-400 hover:text-gray-700 hover:cursor-pointer" onClick={() => debugClickHandler()}>de-🐞</button> */}
